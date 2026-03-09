@@ -1,2226 +1,243 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KiranaBoost — WhatsApp Marketing for Kirana Stores</title>
-  <meta name="description" content="KiranaBoost helps kirana store owners retain customers and increase repeat purchases using WhatsApp marketing." />
-  <meta name="theme-color" content="#00C853" />
-  <!-- React + Babel from CDN — no build step needed -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<meta charset="UTF-8">
+<title>KiranaConnect</title>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f3f4f6;
+}
+
+.header{
+background:#0f172a;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+input{
+padding:8px;
+margin:5px;
+}
+
+button{
+padding:8px 12px;
+background:#2563eb;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+h3{
+margin-top:0;
+}
+
+</style>
+
 </head>
+
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
 
+<div id="root"></div>
 
-// ==================== CONTEXT ====================
-const AppContext = createContext(null);
-const useApp = () => useContext(AppContext);
+<script type="text/babel">
 
-// ==================== MOCK DATA ====================
-const MOCK_CUSTOMERS = [
-  { id: 1, name: "Ramesh Kumar", phone: "9876543210", segment: "regular", totalPurchases: 42, lastVisit: "2024-01-10", joinDate: "2023-03-15" },
-  { id: 2, name: "Sunita Devi", phone: "9123456789", segment: "vip", totalPurchases: 87, lastVisit: "2024-01-12", joinDate: "2022-11-20" },
-  { id: 3, name: "Ajay Singh", phone: "9988776655", segment: "new", totalPurchases: 3, lastVisit: "2024-01-08", joinDate: "2024-01-01" },
-  { id: 4, name: "Priya Sharma", phone: "9765432109", segment: "regular", totalPurchases: 29, lastVisit: "2024-01-11", joinDate: "2023-06-10" },
-  { id: 5, name: "Mohan Lal", phone: "9654321098", segment: "inactive", totalPurchases: 12, lastVisit: "2023-11-05", joinDate: "2023-01-20" },
-  { id: 6, name: "Kavita Rao", phone: "9543210987", segment: "vip", totalPurchases: 64, lastVisit: "2024-01-13", joinDate: "2022-08-05" },
-];
+const {useState,useEffect}=React;
 
-const MOCK_CAMPAIGNS = [
-  { id: 1, name: "Makar Sankranti Offer", type: "festival", status: "sent", sent: 145, delivered: 138, opened: 89, date: "2024-01-14", message: "Happy Makar Sankranti! Get 15% off on all items today." },
-  { id: 2, name: "Weekend Flash Sale", type: "promotional", status: "scheduled", sent: 0, delivered: 0, opened: 0, date: "2024-01-20", message: "Weekend special! Buy 2 get 1 free on all snacks." },
-  { id: 3, name: "New Year Greetings", type: "festival", status: "sent", sent: 203, delivered: 195, opened: 142, date: "2024-01-01", message: "Wishing you a Happy New Year! 20% off all purchases today." },
-  { id: 4, name: "Re-engagement Drive", type: "reminder", status: "sent", sent: 67, delivered: 62, opened: 31, date: "2023-12-28", message: "We miss you! Come back and get a special discount." },
-];
+function App(){
 
-const MOCK_OFFERS = [
-  { id: 1, title: "Republic Day Sale", discount: "26%", validUntil: "2024-01-26", status: "active", type: "festival" },
-  { id: 2, title: "Bulk Buy Deal", discount: "₹50 off on ₹500+", validUntil: "2024-02-28", status: "active", type: "promotional" },
-  { id: 3, title: "Sunday Special", discount: "10% off", validUntil: "2024-01-21", status: "draft", type: "weekly" },
-];
+const [customers,setCustomers]=useState([]);
+const [products,setProducts]=useState([]);
+const [sales,setSales]=useState([]);
 
-const ADMIN_USERS = [
-  { id: 1, shopName: "Sharma General Store", owner: "Rajesh Sharma", email: "rajesh@gmail.com", plan: "Pro", customers: 245, status: "active", joined: "2023-10-15" },
-  { id: 2, shopName: "Patel Kirana", owner: "Suresh Patel", email: "suresh@gmail.com", plan: "Basic", customers: 89, status: "active", joined: "2023-11-20" },
-  { id: 3, shopName: "Verma Groceries", owner: "Anita Verma", email: "anita@gmail.com", plan: "Free", customers: 23, status: "pending", joined: "2024-01-05" },
-  { id: 4, shopName: "Singh Provision", owner: "Gurpreet Singh", email: "gurpreet@gmail.com", plan: "Pro", customers: 312, status: "active", joined: "2023-08-10" },
-  { id: 5, shopName: "Mehta Super Store", owner: "Divya Mehta", email: "divya@gmail.com", plan: "Basic", customers: 156, status: "suspended", joined: "2023-09-25" },
-];
+const [cname,setCname]=useState("");
+const [cphone,setCphone]=useState("");
 
-// ==================== ICONS ====================
-const Icon = ({ name, size = 20, className = "" }) => {
-  const icons = {
-    home: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-    users: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-    message: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-    chart: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-    tag: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
-    settings: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a2.83 2.83 0 0 1 4 4 10 10 0 0 1-14.14 14.14 2.83 2.83 0 0 1-4-4A10 10 0 0 1 19.07 4.93z"/></svg>,
-    bell: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
-    plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-    send: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
-    check: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="20 6 9 17 4 12"/></svg>,
-    x: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-    menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-    arrow: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
-    star: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
-    shop: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-    whatsapp: <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>,
-    calendar: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
-    logout: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
-    shield: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-    trending: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-    eye: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
-    rupee: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><line x1="6" y1="3" x2="18" y2="3"/><path d="M6 8h12M6 14l6 7 6-7"/><path d="M6 8a6 6 0 0 1 6 6"/></svg>,
-    phone: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
-    mail: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
-    map: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
-    info: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
-    help: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
-    zap: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-    edit: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
-    trash: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>,
-    refresh: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>,
-    filter: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>,
-    grid: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
-    upload: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>,
-    download: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>,
-  };
-  return icons[name] || null;
-};
+const [pname,setPname]=useState("");
+const [pprice,setPprice]=useState("");
 
-// ==================== STYLES ====================
-const globalStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Noto+Sans:wght@400;500;600&display=swap');
-  
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  :root {
-    --green: #00C853;
-    --green-dark: #00A843;
-    --green-light: #E8FFF0;
-    --green-mid: #00E676;
-    --orange: #FF6D00;
-    --orange-light: #FFF3E0;
-    --dark: #0D1117;
-    --dark-2: #161B22;
-    --dark-3: #21262D;
-    --dark-4: #30363D;
-    --border: #30363D;
-    --text-primary: #F0F6FC;
-    --text-secondary: #8B949E;
-    --text-muted: #6E7681;
-    --white: #FFFFFF;
-    --shadow: 0 4px 24px rgba(0,0,0,0.3);
-    --radius: 12px;
-    --radius-sm: 8px;
-    --radius-lg: 16px;
-  }
-  
-  body { 
-    font-family: 'Noto Sans', sans-serif;
-    background: var(--dark);
-    color: var(--text-primary);
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-  
-  h1,h2,h3,h4,h5,h6 { font-family: 'Sora', sans-serif; line-height: 1.2; }
-  
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 20px; border-radius: var(--radius-sm);
-    font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600;
-    cursor: pointer; border: none; transition: all 0.2s; text-decoration: none;
-    white-space: nowrap;
-  }
-  .btn-primary { background: var(--green); color: #000; }
-  .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,200,83,0.4); }
-  .btn-secondary { background: transparent; color: var(--text-primary); border: 1.5px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--green); color: var(--green); }
-  .btn-danger { background: #FF4444; color: #fff; }
-  .btn-danger:hover { background: #FF2222; }
-  .btn-ghost { background: var(--dark-3); color: var(--text-primary); }
-  .btn-ghost:hover { background: var(--dark-4); }
-  .btn-sm { padding: 6px 14px; font-size: 13px; }
-  .btn-lg { padding: 14px 28px; font-size: 16px; }
-  
-  .card {
-    background: var(--dark-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-  }
-  
-  .input {
-    width: 100%; padding: 10px 14px;
-    background: var(--dark-3); border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text-primary);
-    font-family: 'Noto Sans', sans-serif; font-size: 14px;
-    transition: border-color 0.2s; outline: none;
-  }
-  .input:focus { border-color: var(--green); }
-  .input::placeholder { color: var(--text-muted); }
-  
-  .label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; font-family: 'Sora', sans-serif; }
-  
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 10px; border-radius: 20px;
-    font-size: 12px; font-weight: 600; font-family: 'Sora', sans-serif;
-  }
-  .badge-green { background: rgba(0,200,83,0.15); color: var(--green); }
-  .badge-orange { background: rgba(255,109,0,0.15); color: var(--orange); }
-  .badge-blue { background: rgba(88,166,255,0.15); color: #58A6FF; }
-  .badge-red { background: rgba(255,68,68,0.15); color: #FF4444; }
-  .badge-gray { background: var(--dark-3); color: var(--text-secondary); }
-  .badge-purple { background: rgba(188,130,255,0.15); color: #BC82FF; }
-  
-  .stat-card {
-    background: var(--dark-2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .stat-value { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 800; }
-  .stat-label { font-size: 13px; color: var(--text-secondary); }
-  .stat-change { font-size: 12px; font-weight: 600; }
-  .stat-change.up { color: var(--green); }
-  .stat-change.down { color: #FF4444; }
-  
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; }
-  th { padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-align: left; font-family: 'Sora', sans-serif; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid rgba(48,54,61,0.5); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,0.02); }
-  
-  select.input { appearance: none; cursor: pointer; }
-  textarea.input { resize: vertical; min-height: 90px; }
-  
-  .progress-bar { height: 6px; background: var(--dark-3); border-radius: 99px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width 0.5s; }
-  
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-  
-  .fade-in { animation: fadeIn 0.3s ease forwards; }
-  
-  .section { padding: 80px 0; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-  
-  @media (max-width: 768px) {
-    .section { padding: 50px 0; }
-    .hide-mobile { display: none !important; }
-  }
-  
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000; padding: 20px; animation: fadeIn 0.2s ease;
-  }
-  .modal {
-    background: var(--dark-2); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 28px;
-    width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
-  }
-  
-  .dot-online { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; box-shadow: 0 0 6px var(--green); }
-  
-  .wa-green { color: #25D366; }
-  
-  .gradient-text {
-    background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-`;
+const [sale,setSale]=useState("");
 
-// ==================== NAVBAR ====================
-const Navbar = ({ page, setPage, user, setUser }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const publicPages = ["home", "about", "features", "pricing", "contact", "faq"];
+useEffect(()=>{
+const data=localStorage.getItem("kiranaData");
+if(data){
+const parsed=JSON.parse(data);
+setCustomers(parsed.customers||[]);
+setProducts(parsed.products||[]);
+setSales(parsed.sales||[]);
+}
+},[]);
 
-  return (
-    <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 999, background: "rgba(13,17,23,0.9)", backdropFilter: "blur(12px)", borderBottom: "1px solid var(--border)" }}>
-      <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => setPage("home")}>
-          <div style={{ width: 36, height: 36, background: "linear-gradient(135deg, #00C853, #00E676)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Icon name="shop" size={20} style={{ color: "#000" }} />
-          </div>
-          <span style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 18, color: "#fff" }}>Kirana<span className="gradient-text">Boost</span></span>
-        </div>
+useEffect(()=>{
+localStorage.setItem("kiranaData",JSON.stringify({
+customers,
+products,
+sales
+}));
+},[customers,products,sales]);
 
-        <div className="hide-mobile" style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {publicPages.map(p => (
-            <button key={p} className="btn btn-ghost btn-sm" style={{ background: page === p ? "var(--dark-3)" : "transparent", color: page === p ? "var(--green)" : "var(--text-secondary)", textTransform: "capitalize" }}
-              onClick={() => setPage(p)}>{p}</button>
-          ))}
-        </div>
+function addCustomer(){
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {user ? (
-            <>
-              <button className="btn btn-ghost btn-sm" onClick={() => setPage(user.role === "admin" ? "admin" : "dashboard")}>
-                <Icon name="grid" size={16} /> Dashboard
-              </button>
-              <button className="btn btn-secondary btn-sm" onClick={() => { setUser(null); setPage("home"); }}>
-                <Icon name="logout" size={16} /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="btn btn-secondary btn-sm hide-mobile" onClick={() => setPage("login")}>Login</button>
-              <button className="btn btn-primary btn-sm" onClick={() => setPage("signup")}>Get Started</button>
-            </>
-          )}
-          <button className="btn btn-ghost btn-sm" style={{ display: "none" }} onClick={() => setMenuOpen(!menuOpen)} id="hamburger">
-            <Icon name="menu" size={18} />
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
-};
+if(!cname||!cphone)return;
 
-// ==================== HOME PAGE ====================
-const HomePage = ({ setPage }) => {
-  const stats = [
-    { value: "10,000+", label: "Kirana Stores" },
-    { value: "2.5M+", label: "Customers Reached" },
-    { value: "40%", label: "Avg. Repeat Purchase Increase" },
-    { value: "₹15Cr+", label: "Revenue Generated" },
-  ];
-  const features = [
-    { icon: "users", title: "Customer Database", desc: "Build and manage your complete customer list with segments and purchase history." },
-    { icon: "whatsapp", title: "WhatsApp Campaigns", desc: "Send bulk WhatsApp messages for offers, festivals, and reminders in one click." },
-    { icon: "tag", title: "Offer Creator", desc: "Create attractive digital coupons and discount offers in minutes." },
-    { icon: "calendar", title: "Message Scheduling", desc: "Schedule campaigns for Diwali, Holi, weekends — plan ahead automatically." },
-    { icon: "chart", title: "Analytics Dashboard", desc: "See which campaigns worked, track repeat visits, and grow your business." },
-    { icon: "zap", title: "Smart Segmentation", desc: "Target VIP customers, new buyers, or inactive customers with tailored messages." },
-  ];
-  const testimonials = [
-    { name: "Rajesh Gupta", shop: "Gupta General Store, Pune", text: "My repeat customer visits went up 35% in just 2 months. Festival offers through WhatsApp really works!", rating: 5 },
-    { name: "Sunita Patel", shop: "Patel Kirana, Ahmedabad", text: "I never had any way to contact old customers before. Now I send weekly offers and people actually come back.", rating: 5 },
-    { name: "Mohan Das", shop: "Das Provision Store, Chennai", text: "Very simple to use. Even without smartphone knowledge I could manage everything from my phone.", rating: 4 },
-  ];
+setCustomers([...customers,{name:cname,phone:cphone}]);
 
-  return (
-    <div>
-      {/* Hero */}
-      <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", background: "radial-gradient(ellipse at 50% 0%, rgba(0,200,83,0.12) 0%, transparent 60%)", paddingTop: 80 }}>
-        <div className="container" style={{ textAlign: "center", padding: "80px 20px" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(0,200,83,0.1)", border: "1px solid rgba(0,200,83,0.3)", borderRadius: 99, padding: "6px 16px", marginBottom: 24 }}>
-            <span style={{ width: 8, height: 8, background: "var(--green)", borderRadius: "50%", boxShadow: "0 0 8px var(--green)", display: "inline-block" }}></span>
-            <span style={{ fontSize: 13, color: "var(--green)", fontWeight: 600, fontFamily: "Sora" }}>Now available in India — Free to start</span>
-          </div>
-          <h1 style={{ fontSize: "clamp(32px, 6vw, 64px)", fontWeight: 800, lineHeight: 1.1, marginBottom: 20 }}>
-            Grow Your Kirana Store<br />with <span className="gradient-text">WhatsApp Marketing</span>
-          </h1>
-          <p style={{ fontSize: "clamp(15px, 2vw, 18px)", color: "var(--text-secondary)", maxWidth: 580, margin: "0 auto 36px", lineHeight: 1.7 }}>
-            Send offers, festival discounts, and reminders to your customers via WhatsApp. Build loyalty, increase repeat purchases, and grow your small business — all from your smartphone.
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn btn-primary btn-lg" onClick={() => setPage("signup")}>
-              Start for Free <Icon name="arrow" size={18} />
-            </button>
-            <button className="btn btn-secondary btn-lg" onClick={() => setPage("features")}>
-              See How it Works
-            </button>
-          </div>
-          <p style={{ marginTop: 16, fontSize: 13, color: "var(--text-muted)" }}>No credit card required • Free plan available • Setup in 5 minutes</p>
+setCname("");
+setCphone("");
 
-          {/* Phone mockup */}
-          <div style={{ marginTop: 60, position: "relative", display: "inline-block" }}>
-            <div style={{ background: "var(--dark-2)", border: "1px solid var(--border)", borderRadius: 20, padding: 20, maxWidth: 320, margin: "0 auto", boxShadow: "0 20px 60px rgba(0,200,83,0.15)" }}>
-              <div style={{ background: "#075E54", borderRadius: 12, padding: 16, marginBottom: 12 }}>
-                <div style={{ fontSize: 12, color: "#A0D9CE", fontFamily: "Sora", fontWeight: 600, marginBottom: 8 }}>Sharma General Store 🏪</div>
-                <div style={{ background: "#128C7E", borderRadius: "12px 12px 12px 4px", padding: "10px 14px", marginBottom: 8 }}>
-                  <p style={{ fontSize: 13, color: "#fff" }}>🎉 Happy Diwali from Sharma Store! Get <strong>20% OFF</strong> on all items today only!</p>
-                  <p style={{ fontSize: 11, color: "#A0D9CE", marginTop: 4 }}>Use code: DIWALI24</p>
-                </div>
-                <div style={{ textAlign: "right", fontSize: 11, color: "#A0D9CE" }}>✓✓ 2:30 PM</div>
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ background: "rgba(0,200,83,0.1)", border: "1px solid rgba(0,200,83,0.3)", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "var(--green)" }}>145 delivered</span>
-                <span style={{ background: "rgba(88,166,255,0.1)", border: "1px solid rgba(88,166,255,0.3)", borderRadius: 8, padding: "4px 10px", fontSize: 11, color: "#58A6FF" }}>89 opened</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section style={{ padding: "40px 0", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", background: "var(--dark-2)" }}>
-        <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 24, textAlign: "center" }}>
-            {stats.map((s, i) => (
-              <div key={i}>
-                <div style={{ fontFamily: "Sora", fontSize: 28, fontWeight: 800, color: "var(--green)" }}>{s.value}</div>
-                <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 4 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="section">
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <h2 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 800, marginBottom: 12 }}>Everything Your Kirana Store Needs</h2>
-            <p style={{ color: "var(--text-secondary)", fontSize: 16, maxWidth: 500, margin: "0 auto" }}>Simple, powerful tools designed specifically for small Indian retailers</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-            {features.map((f, i) => (
-              <div key={i} className="card" style={{ transition: "all 0.2s", cursor: "default" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,200,83,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}>
-                <div style={{ width: 44, height: 44, background: "rgba(0,200,83,0.1)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14, color: "var(--green)" }}>
-                  <Icon name={f.icon} size={22} />
-                </div>
-                <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works */}
-      <section className="section" style={{ background: "var(--dark-2)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 800, marginBottom: 12 }}>Start in 3 Simple Steps</h2>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 24 }}>
-            {[
-              { step: "01", title: "Create Your Shop Profile", desc: "Register your store, add your details and your WhatsApp number for sending messages." },
-              { step: "02", title: "Add Your Customers", desc: "Import or manually add customer phone numbers. Group them into segments for better targeting." },
-              { step: "03", title: "Send & Grow", desc: "Create offers and send them via WhatsApp. Watch your customers return and repeat purchases grow." },
-            ].map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                <div style={{ fontFamily: "Sora", fontSize: 36, fontWeight: 800, color: "rgba(0,200,83,0.2)", lineHeight: 1, minWidth: 48 }}>{s.step}</div>
-                <div>
-                  <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{s.title}</h3>
-                  <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.6 }}>{s.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="section">
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <h2 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 800, marginBottom: 12 }}>Trusted by Kirana Owners Across India</h2>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-            {testimonials.map((t, i) => (
-              <div key={i} className="card">
-                <div style={{ display: "flex", gap: 2, marginBottom: 12 }}>
-                  {Array(t.rating).fill(0).map((_, j) => <Icon key={j} name="star" size={14} style={{ color: "#FFB400" }} />)}
-                </div>
-                <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.7, marginBottom: 16, fontStyle: "italic" }}>"{t.text}"</p>
-                <div>
-                  <div style={{ fontWeight: 600, fontFamily: "Sora", fontSize: 14 }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{t.shop}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ padding: "80px 0", background: "linear-gradient(135deg, rgba(0,200,83,0.1), rgba(0,230,118,0.05))", borderTop: "1px solid rgba(0,200,83,0.2)" }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 800, marginBottom: 16 }}>Ready to Boost Your Kirana Store?</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 16, marginBottom: 32, maxWidth: 480, margin: "0 auto 32px" }}>Join 10,000+ shop owners who are growing their business with KiranaBoost</p>
-          <button className="btn btn-primary btn-lg" onClick={() => setPage("signup")}>
-            Start Free Today <Icon name="arrow" size={18} />
-          </button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{ background: "var(--dark-2)", borderTop: "1px solid var(--border)", padding: "40px 0 20px" }}>
-        <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 32, marginBottom: 32 }}>
-            <div>
-              <div style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 16, marginBottom: 12 }}>Kirana<span className="gradient-text">Boost</span></div>
-              <p style={{ color: "var(--text-muted)", fontSize: 13, lineHeight: 1.6 }}>Helping small retailers grow with smart WhatsApp marketing.</p>
-            </div>
-            {[
-              { title: "Product", links: ["features", "pricing", "about"] },
-              { title: "Support", links: ["contact", "faq", "privacy", "terms"] },
-            ].map((col, i) => (
-              <div key={i}>
-                <div style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 13, marginBottom: 12, color: "var(--text-secondary)" }}>{col.title}</div>
-                {col.links.map(l => (
-                  <div key={l} style={{ marginBottom: 8 }}>
-                    <a href="#" style={{ color: "var(--text-muted)", fontSize: 13, textDecoration: "none", textTransform: "capitalize" }}
-                      onClick={e => { e.preventDefault(); setPage(l); }}>{l}</a>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div style={{ borderTop: "1px solid var(--border)", paddingTop: 20, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>© 2024 KiranaBoost. All rights reserved.</span>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Made with ❤️ for Indian Kirana Stores</span>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
-
-// ==================== FEATURES PAGE ====================
-const FeaturesPage = ({ setPage }) => {
-  const features = [
-    {
-      icon: "users", title: "Customer Database Management",
-      points: ["Add unlimited customer phone numbers and names", "Import customers via CSV file", "Track purchase history and visit frequency", "Add custom notes and tags for each customer"]
-    },
-    {
-      icon: "whatsapp", title: "WhatsApp Campaign System",
-      points: ["Send to all customers or selected segments", "Personalize messages with customer names", "Use pre-built festival message templates", "Track delivery and open rates in real time"]
-    },
-    {
-      icon: "zap", title: "Smart Customer Segmentation",
-      points: ["Auto-segment into VIP, regular, new, inactive", "Create custom groups for any occasion", "Target customers by purchase frequency", "Re-engage inactive customers automatically"]
-    },
-    {
-      icon: "tag", title: "Offer & Coupon Creator",
-      points: ["Create discount offers in seconds", "Set validity dates for time-limited offers", "Festival-themed offer templates included", "Share offers as WhatsApp messages or images"]
-    },
-    {
-      icon: "calendar", title: "Message Scheduling",
-      points: ["Schedule campaigns days in advance", "Pre-plan all festival campaigns for the year", "Set recurring weekly/monthly reminders", "Time your messages for maximum engagement"]
-    },
-    {
-      icon: "chart", title: "Analytics & Insights",
-      points: ["See total messages sent and delivered", "Track which offers got best response", "Monitor customer engagement trends", "View repeat purchase improvement metrics"]
-    },
-  ];
-
-  return (
-    <div style={{ paddingTop: 80 }}>
-      <section className="section">
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 60 }}>
-            <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800, marginBottom: 16 }}>Powerful Features for <span className="gradient-text">Every Kirana Store</span></h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: 16, maxWidth: 550, margin: "0 auto" }}>Everything you need to retain customers and grow repeat business — in one simple platform</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
-            {features.map((f, i) => (
-              <div key={i} className="card">
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                  <div style={{ width: 44, height: 44, background: "rgba(0,200,83,0.1)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--green)" }}>
-                    <Icon name={f.icon} size={22} />
-                  </div>
-                  <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16 }}>{f.title}</h3>
-                </div>
-                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {f.points.map((p, j) => (
-                    <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 14, color: "var(--text-secondary)" }}>
-                      <Icon name="check" size={14} style={{ color: "var(--green)", marginTop: 2, flexShrink: 0 }} />
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div style={{ textAlign: "center", marginTop: 48 }}>
-            <button className="btn btn-primary btn-lg" onClick={() => setPage("signup")}>Get Started Free <Icon name="arrow" size={18} /></button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// ==================== PRICING PAGE ====================
-const PricingPage = ({ setPage }) => {
-  const [billing, setBilling] = useState("monthly");
-  const plans = [
-    {
-      name: "Free", price: { monthly: 0, yearly: 0 }, badge: null,
-      features: ["Up to 50 customers", "10 WhatsApp messages/month", "Basic templates", "1 campaign/month", "Email support"],
-      cta: "Start Free", color: "var(--text-secondary)"
-    },
-    {
-      name: "Basic", price: { monthly: 199, yearly: 1990 }, badge: "Most Popular",
-      features: ["Up to 500 customers", "500 WhatsApp messages/month", "All templates", "Unlimited campaigns", "Message scheduling", "Basic analytics", "Priority support"],
-      cta: "Start Basic", color: "var(--green)"
-    },
-    {
-      name: "Pro", price: { monthly: 399, yearly: 3990 }, badge: "Best Value",
-      features: ["Unlimited customers", "2000 WhatsApp messages/month", "All templates + custom", "Unlimited campaigns", "Advanced scheduling", "Full analytics", "Customer segmentation", "Offer creator", "Razorpay integration", "24/7 support"],
-      cta: "Go Pro", color: "#BC82FF"
-    },
-  ];
-
-  return (
-    <div style={{ paddingTop: 80 }}>
-      <section className="section">
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800, marginBottom: 16 }}>Simple, Transparent <span className="gradient-text">Pricing</span></h1>
-            <p style={{ color: "var(--text-secondary)", fontSize: 16, marginBottom: 28 }}>Start free, upgrade when you grow</p>
-            <div style={{ display: "inline-flex", background: "var(--dark-2)", border: "1px solid var(--border)", borderRadius: 99, padding: 4 }}>
-              {["monthly", "yearly"].map(b => (
-                <button key={b} onClick={() => setBilling(b)} style={{ padding: "6px 20px", borderRadius: 99, border: "none", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 13, transition: "all 0.2s", background: billing === b ? "var(--green)" : "transparent", color: billing === b ? "#000" : "var(--text-secondary)" }}>
-                  {b === "monthly" ? "Monthly" : "Yearly (Save 17%)"}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24, maxWidth: 900, margin: "0 auto" }}>
-            {plans.map((plan, i) => (
-              <div key={i} className="card" style={{ position: "relative", border: plan.name === "Basic" ? "1.5px solid var(--green)" : "1px solid var(--border)" }}>
-                {plan.badge && <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "var(--green)", color: "#000", fontSize: 11, fontWeight: 700, fontFamily: "Sora", padding: "3px 12px", borderRadius: 99 }}>{plan.badge}</div>}
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 18, color: plan.color, marginBottom: 8 }}>{plan.name}</div>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                    <span style={{ fontFamily: "Sora", fontSize: 36, fontWeight: 800 }}>
-                      {plan.price[billing] === 0 ? "Free" : `₹${plan.price[billing]}`}
-                    </span>
-                    {plan.price[billing] > 0 && <span style={{ color: "var(--text-muted)", fontSize: 13 }}>/{billing === "monthly" ? "mo" : "yr"}</span>}
-                  </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 24 }}>
-                  {plan.features.map((f, j) => (
-                    <div key={j} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 14, color: "var(--text-secondary)" }}>
-                      <Icon name="check" size={14} style={{ color: plan.color, marginTop: 2, flexShrink: 0 }} />
-                      {f}
-                    </div>
-                  ))}
-                </div>
-                <button className={`btn btn-${plan.name === "Basic" ? "primary" : "secondary"}`} style={{ width: "100%", justifyContent: "center" }} onClick={() => setPage("signup")}>
-                  {plan.cta}
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: 48, background: "var(--dark-2)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: 24 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 16, textAlign: "center" }}>All Plans Include</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
-              {["Mobile-first dashboard", "WhatsApp integration", "Festival templates", "SSL security", "Cloud backup", "No setup fees"].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-                  <Icon name="check" size={14} style={{ color: "var(--green)" }} /> {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// ==================== AUTH PAGES ====================
-const LoginPage = ({ setPage, setUser }) => {
-  const [form, setForm] = useState({ email: "", password: "", role: "owner" });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleLogin = () => {
-    setLoading(true); setError("");
-    setTimeout(() => {
-      if (form.email && form.password) {
-        if (form.role === "admin") {
-          setUser({ name: "Admin", email: form.email, role: "admin" });
-          setPage("admin");
-        } else {
-          setUser({ name: "Rajesh Sharma", shopName: "Sharma General Store", email: form.email, role: "owner", plan: "Pro" });
-          setPage("dashboard");
-        }
-      } else {
-        setError("Please enter email and password.");
-      }
-      setLoading(false);
-    }, 1000);
-  };
-
-  return (
-    <div style={{ paddingTop: 80, minHeight: "100vh", display: "flex", alignItems: "center", background: "radial-gradient(ellipse at 50% 30%, rgba(0,200,83,0.08) 0%, transparent 60%)" }}>
-      <div style={{ maxWidth: 400, margin: "0 auto", width: "100%", padding: "40px 20px" }}>
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>Welcome Back</h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>Sign in to your KiranaBoost account</p>
-        </div>
-        <div className="card" style={{ padding: 28 }}>
-          {error && <div style={{ background: "rgba(255,68,68,0.1)", border: "1px solid rgba(255,68,68,0.3)", borderRadius: 8, padding: "10px 14px", marginBottom: 16, fontSize: 13, color: "#FF4444" }}>{error}</div>}
-          <div style={{ marginBottom: 16 }}>
-            <label className="label">Login As</label>
-            <select className="input" value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-              <option value="owner">Shop Owner</option>
-              <option value="admin">Platform Admin</option>
-            </select>
-          </div>
-          <div style={{ marginBottom: 16 }}>
-            <label className="label">Email Address</label>
-            <input className="input" type="email" placeholder="rajesh@gmail.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-          </div>
-          <div style={{ marginBottom: 20 }}>
-            <label className="label">Password</label>
-            <input className="input" type="password" placeholder="Enter your password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-          </div>
-          <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", height: 44 }} onClick={handleLogin} disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-          <div style={{ textAlign: "center", marginTop: 20, fontSize: 13, color: "var(--text-secondary)" }}>
-            Don't have an account?{" "}
-            <button style={{ background: "none", border: "none", color: "var(--green)", cursor: "pointer", fontWeight: 600, fontFamily: "Sora", fontSize: 13 }} onClick={() => setPage("signup")}>Sign up free</button>
-          </div>
-        </div>
-        <p style={{ textAlign: "center", marginTop: 16, fontSize: 12, color: "var(--text-muted)" }}>Demo: Enter any email/password to login</p>
-      </div>
-    </div>
-  );
-};
-
-const SignupPage = ({ setPage, setUser }) => {
-  const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: "", shopName: "", phone: "", email: "", password: "", category: "grocery", city: "" });
-  const [loading, setLoading] = useState(false);
-
-  const handleSignup = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setUser({ name: form.name, shopName: form.shopName, email: form.email, role: "owner", plan: "Free" });
-      setPage("dashboard");
-      setLoading(false);
-    }, 1200);
-  };
-
-  return (
-    <div style={{ paddingTop: 80, minHeight: "100vh", display: "flex", alignItems: "center", background: "radial-gradient(ellipse at 50% 30%, rgba(0,200,83,0.08) 0%, transparent 60%)" }}>
-      <div style={{ maxWidth: 440, margin: "0 auto", width: "100%", padding: "40px 20px" }}>
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>Create Your Account</h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>Join 10,000+ kirana stores growing with KiranaBoost</p>
-        </div>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-          {[1, 2].map(s => (
-            <div key={s} style={{ flex: 1, height: 4, borderRadius: 99, background: step >= s ? "var(--green)" : "var(--dark-3)", transition: "background 0.3s" }} />
-          ))}
-        </div>
-
-        <div className="card" style={{ padding: 28 }}>
-          {step === 1 ? (
-            <>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 20 }}>Personal Information</h3>
-              <div style={{ marginBottom: 14 }}>
-                <label className="label">Your Name</label>
-                <input className="input" placeholder="Rajesh Sharma" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-              </div>
-              <div style={{ marginBottom: 14 }}>
-                <label className="label">Phone Number (WhatsApp)</label>
-                <input className="input" placeholder="+91 98765 43210" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
-              </div>
-              <div style={{ marginBottom: 14 }}>
-                <label className="label">Email Address</label>
-                <input className="input" type="email" placeholder="rajesh@gmail.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-              </div>
-              <div style={{ marginBottom: 20 }}>
-                <label className="label">Password</label>
-                <input className="input" type="password" placeholder="Create a password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-              </div>
-              <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", height: 44 }} onClick={() => setStep(2)}>
-                Continue <Icon name="arrow" size={16} />
-              </button>
-            </>
-          ) : (
-            <>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 20 }}>Shop Information</h3>
-              <div style={{ marginBottom: 14 }}>
-                <label className="label">Shop Name</label>
-                <input className="input" placeholder="Sharma General Store" value={form.shopName} onChange={e => setForm({ ...form, shopName: e.target.value })} />
-              </div>
-              <div style={{ marginBottom: 14 }}>
-                <label className="label">Shop Category</label>
-                <select className="input" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                  <option value="grocery">Kirana / Grocery Store</option>
-                  <option value="vegetable">Vegetable / Fruit Vendor</option>
-                  <option value="medical">Medical / Pharmacy</option>
-                  <option value="bakery">Bakery / Sweet Shop</option>
-                  <option value="clothes">Clothing / Textiles</option>
-                  <option value="other">Other Retail</option>
-                </select>
-              </div>
-              <div style={{ marginBottom: 20 }}>
-                <label className="label">City / Town</label>
-                <input className="input" placeholder="Mumbai, Pune, Delhi..." value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} />
-              </div>
-              <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center", height: 44 }} onClick={handleSignup} disabled={loading}>
-                {loading ? "Creating account..." : "Create Free Account"}
-              </button>
-            </>
-          )}
-          <p style={{ fontSize: 12, color: "var(--text-muted)", textAlign: "center", marginTop: 14 }}>
-            By signing up you agree to our{" "}
-            <button style={{ background: "none", border: "none", color: "var(--green)", cursor: "pointer", fontSize: 12 }} onClick={() => setPage("terms")}>Terms</button>
-            {" & "}
-            <button style={{ background: "none", border: "none", color: "var(--green)", cursor: "pointer", fontSize: 12 }} onClick={() => setPage("privacy")}>Privacy Policy</button>
-          </p>
-        </div>
-        <p style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "var(--text-secondary)" }}>
-          Already have an account?{" "}
-          <button style={{ background: "none", border: "none", color: "var(--green)", cursor: "pointer", fontWeight: 600, fontFamily: "Sora", fontSize: 13 }} onClick={() => setPage("login")}>Sign in</button>
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// ==================== DASHBOARD ====================
-const Dashboard = ({ user }) => {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const navItems = [
-    { id: "overview", label: "Overview", icon: "home" },
-    { id: "customers", label: "Customers", icon: "users" },
-    { id: "campaigns", label: "Campaigns", icon: "send" },
-    { id: "offers", label: "Offers", icon: "tag" },
-    { id: "analytics", label: "Analytics", icon: "chart" },
-    { id: "schedule", label: "Schedule", icon: "calendar" },
-    { id: "settings", label: "Settings", icon: "settings" },
-  ];
-
-  const Sidebar = () => (
-    <div style={{ width: 220, background: "var(--dark-2)", borderRight: "1px solid var(--border)", height: "calc(100vh - 64px)", position: "sticky", top: 64, display: "flex", flexDirection: "column", flexShrink: 0 }}>
-      <div style={{ padding: "20px 16px 12px" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", fontFamily: "Sora", marginBottom: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>Navigation</div>
-        {navItems.map(item => (
-          <button key={item.id} onClick={() => setActiveTab(item.id)}
-            style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 8, border: "none", cursor: "pointer", marginBottom: 2, fontFamily: "Sora", fontWeight: 500, fontSize: 13, transition: "all 0.15s",
-              background: activeTab === item.id ? "rgba(0,200,83,0.1)" : "transparent",
-              color: activeTab === item.id ? "var(--green)" : "var(--text-secondary)" }}>
-            <Icon name={item.icon} size={16} />
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <div style={{ marginTop: "auto", padding: "16px", borderTop: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, background: "var(--green)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "#000" }}>
-            {user?.name?.[0] || "R"}
-          </div>
-          <div>
-            <div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 12 }}>{user?.shopName}</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{user?.plan} Plan</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div style={{ paddingTop: 64, display: "flex", minHeight: "100vh" }}>
-      <div className="hide-mobile"><Sidebar /></div>
-
-      <div style={{ flex: 1, overflow: "hidden" }}>
-        {/* Mobile nav */}
-        <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", display: "flex", gap: 6, overflowX: "auto" }}>
-          {navItems.map(item => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap", transition: "all 0.15s",
-                background: activeTab === item.id ? "var(--green)" : "var(--dark-3)",
-                color: activeTab === item.id ? "#000" : "var(--text-secondary)" }}>
-              <Icon name={item.icon} size={14} />
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ padding: "24px 20px" }} className="fade-in">
-          {activeTab === "overview" && <DashOverview user={user} setActiveTab={setActiveTab} />}
-          {activeTab === "customers" && <DashCustomers />}
-          {activeTab === "campaigns" && <DashCampaigns />}
-          {activeTab === "offers" && <DashOffers />}
-          {activeTab === "analytics" && <DashAnalytics />}
-          {activeTab === "schedule" && <DashSchedule />}
-          {activeTab === "settings" && <DashSettings user={user} />}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Overview Tab
-const DashOverview = ({ user, setActiveTab }) => {
-  const stats = [
-    { label: "Total Customers", value: "245", change: "+12 this month", up: true, icon: "users", color: "#58A6FF" },
-    { label: "Messages Sent", value: "1,847", change: "+234 this week", up: true, icon: "send", color: "var(--green)" },
-    { label: "Active Campaigns", value: "3", change: "2 scheduled", up: null, icon: "zap", color: "#BC82FF" },
-    { label: "Repeat Customers", value: "68%", change: "+8% vs last month", up: true, icon: "trending", color: var_orange },
-  ];
-
-  return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "Sora", fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Good morning, {user?.name?.split(" ")[0]}! 👋</h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>Here's what's happening with {user?.shopName}</p>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        {stats.map((s, i) => (
-          <div key={i} className="stat-card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <div className="stat-label">{s.label}</div>
-                <div className="stat-value" style={{ color: s.color }}>{s.value}</div>
-                {s.change && <div className={`stat-change ${s.up === true ? "up" : s.up === false ? "down" : ""}`}>{s.change}</div>}
-              </div>
-              <div style={{ width: 40, height: 40, background: `${s.color}20`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: s.color }}>
-                <Icon name={s.icon} size={18} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20, marginBottom: 24 }}>
-        {/* Recent campaigns */}
-        <div className="card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15 }}>Recent Campaigns</h3>
-            <button className="btn btn-ghost btn-sm" onClick={() => setActiveTab("campaigns")}>View All</button>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {MOCK_CAMPAIGNS.slice(0, 3).map(c => (
-              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", background: "var(--dark-3)", borderRadius: 8 }}>
-                <div style={{ width: 32, height: 32, background: c.status === "sent" ? "rgba(0,200,83,0.1)" : "rgba(88,166,255,0.1)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: c.status === "sent" ? "var(--green)" : "#58A6FF" }}>
-                  <Icon name="send" size={14} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{c.status === "sent" ? `${c.delivered} delivered` : "Scheduled"}</div>
-                </div>
-                <span className={`badge ${c.status === "sent" ? "badge-green" : "badge-blue"}`}>{c.status}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick actions */}
-        <div className="card">
-          <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Quick Actions</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {[
-              { icon: "plus", label: "Add New Customer", tab: "customers", color: "var(--green)" },
-              { icon: "send", label: "Create Campaign", tab: "campaigns", color: "#58A6FF" },
-              { icon: "tag", label: "Create Offer", tab: "offers", color: "#BC82FF" },
-              { icon: "calendar", label: "Schedule Message", tab: "schedule", color: var_orange },
-            ].map((a, i) => (
-              <button key={i} onClick={() => setActiveTab(a.tab)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", background: "var(--dark-3)", border: "1px solid var(--border)", borderRadius: 8, cursor: "pointer", width: "100%", transition: "all 0.15s", color: "var(--text-primary)", textAlign: "left" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = a.color}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}>
-                <div style={{ width: 32, height: 32, background: `${a.color}20`, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: a.color }}>
-                  <Icon name={a.icon} size={14} />
-                </div>
-                <span style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{a.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* WhatsApp tip banner */}
-      <div style={{ background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.25)", borderRadius: "var(--radius)", padding: 16, display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{ color: "#25D366", flexShrink: 0 }}>
-          <Icon name="whatsapp" size={28} />
-        </div>
-        <div>
-          <div style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 4 }}>WhatsApp API Connected ✓</div>
-          <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Your business WhatsApp is active. You have <strong style={{ color: "var(--green)" }}>1,153 messages</strong> remaining this month.</div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const var_orange = "#FF6D00";
-
-// Customers Tab
-const DashCustomers = () => {
-  const [customers, setCustomers] = useState(MOCK_CUSTOMERS);
-  const [showModal, setShowModal] = useState(false);
-  const [filter, setFilter] = useState("all");
-  const [search, setSearch] = useState("");
-  const [newCustomer, setNewCustomer] = useState({ name: "", phone: "", segment: "new" });
-
-  const filtered = customers.filter(c =>
-    (filter === "all" || c.segment === filter) &&
-    (c.name.toLowerCase().includes(search.toLowerCase()) || c.phone.includes(search))
-  );
-
-  const segmentColors = { regular: "badge-blue", vip: "badge-purple", new: "badge-green", inactive: "badge-gray" };
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>Customers</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>{customers.length} total customers</p>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button className="btn btn-ghost btn-sm"><Icon name="upload" size={14} /> Import CSV</button>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}><Icon name="plus" size={14} /> Add Customer</button>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <input className="input" style={{ maxWidth: 220 }} placeholder="Search customers..." value={search} onChange={e => setSearch(e.target.value)} />
-        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-          {["all", "vip", "regular", "new", "inactive"].map(s => (
-            <button key={s} onClick={() => setFilter(s)} style={{ padding: "6px 14px", borderRadius: 99, border: "1.5px solid", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 12, textTransform: "capitalize", transition: "all 0.15s",
-              borderColor: filter === s ? "var(--green)" : "var(--border)",
-              background: filter === s ? "rgba(0,200,83,0.1)" : "transparent",
-              color: filter === s ? "var(--green)" : "var(--text-secondary)" }}>
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Name</th><th>Phone</th><th>Segment</th><th>Total Purchases</th><th>Last Visit</th><th>Actions</th></tr>
-            </thead>
-            <tbody>
-              {filtered.map(c => (
-                <tr key={c.id}>
-                  <td><div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{c.name}</div></td>
-                  <td><span style={{ fontSize: 13, color: "var(--text-secondary)" }}>{c.phone}</span></td>
-                  <td><span className={`badge ${segmentColors[c.segment]}`}>{c.segment}</span></td>
-                  <td style={{ fontFamily: "Sora", fontWeight: 700, color: "var(--green)" }}>{c.totalPurchases}</td>
-                  <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{c.lastVisit}</td>
-                  <td>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="send" size={13} /></button>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="edit" size={13} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {showModal && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div className="modal">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16 }}>Add New Customer</h3>
-              <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} onClick={() => setShowModal(false)}><Icon name="x" size={18} /></button>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div><label className="label">Customer Name</label><input className="input" placeholder="Full name" value={newCustomer.name} onChange={e => setNewCustomer({ ...newCustomer, name: e.target.value })} /></div>
-              <div><label className="label">Phone Number</label><input className="input" placeholder="98765 43210" value={newCustomer.phone} onChange={e => setNewCustomer({ ...newCustomer, phone: e.target.value })} /></div>
-              <div><label className="label">Segment</label>
-                <select className="input" value={newCustomer.segment} onChange={e => setNewCustomer({ ...newCustomer, segment: e.target.value })}>
-                  <option value="new">New Customer</option>
-                  <option value="regular">Regular Customer</option>
-                  <option value="vip">VIP Customer</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                <button className="btn btn-secondary" style={{ flex: 1, justifyContent: "center" }} onClick={() => setShowModal(false)}>Cancel</button>
-                <button className="btn btn-primary" style={{ flex: 1, justifyContent: "center" }} onClick={() => {
-                  if (newCustomer.name && newCustomer.phone) {
-                    setCustomers([...customers, { ...newCustomer, id: Date.now(), totalPurchases: 0, lastVisit: "New", joinDate: new Date().toISOString().split("T")[0] }]);
-                    setShowModal(false); setNewCustomer({ name: "", phone: "", segment: "new" });
-                  }
-                }}>Add Customer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Campaigns Tab
-const DashCampaigns = () => {
-  const [campaigns] = useState(MOCK_CAMPAIGNS);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newCampaign, setNewCampaign] = useState({ name: "", type: "promotional", message: "", segment: "all" });
-
-  const templates = [
-    { name: "Festival Greeting", text: "🎉 Happy {festival} from {shop}! Get {discount}% off on all items today. Come visit us!" },
-    { name: "Weekend Offer", text: "🛒 Weekend Special at {shop}! Buy ₹{amount} and get ₹{discount} OFF. Offer valid till Sunday only!" },
-    { name: "Re-engagement", text: "We miss you at {shop}! It's been a while. Come back and enjoy a special {discount}% discount just for you 🙏" },
-  ];
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>WhatsApp Campaigns</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>Manage and track your campaigns</p>
-        </div>
-        <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}><Icon name="plus" size={14} /> New Campaign</button>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        {[
-          { label: "Total Sent", value: "415", color: "var(--green)" },
-          { label: "Delivered", value: "395", color: "#58A6FF" },
-          { label: "Opened", value: "262", color: "#BC82FF" },
-          { label: "Response Rate", value: "63%", color: var_orange },
-        ].map((s, i) => (
-          <div key={i} className="stat-card">
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={{ color: s.color, fontSize: 24 }}>{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Campaign</th><th>Type</th><th>Status</th><th>Sent</th><th>Delivered</th><th>Opened</th><th>Date</th></tr></thead>
-            <tbody>
-              {campaigns.map(c => (
-                <tr key={c.id}>
-                  <td><div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{c.name}</div><div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>{c.message.substring(0, 40)}...</div></td>
-                  <td><span className={`badge ${c.type === "festival" ? "badge-orange" : c.type === "promotional" ? "badge-blue" : "badge-gray"}`}>{c.type}</span></td>
-                  <td><span className={`badge ${c.status === "sent" ? "badge-green" : "badge-blue"}`}>{c.status}</span></td>
-                  <td style={{ fontFamily: "Sora", fontWeight: 700 }}>{c.sent}</td>
-                  <td style={{ color: "var(--green)" }}>{c.delivered}</td>
-                  <td style={{ color: "#58A6FF" }}>{c.opened}</td>
-                  <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{c.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {showCreate && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowCreate(false)}>
-          <div className="modal">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16 }}>Create Campaign</h3>
-              <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} onClick={() => setShowCreate(false)}><Icon name="x" size={18} /></button>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div><label className="label">Campaign Name</label><input className="input" placeholder="e.g., Holi Special Offer" value={newCampaign.name} onChange={e => setNewCampaign({ ...newCampaign, name: e.target.value })} /></div>
-              <div><label className="label">Type</label>
-                <select className="input" value={newCampaign.type} onChange={e => setNewCampaign({ ...newCampaign, type: e.target.value })}>
-                  <option value="promotional">Promotional</option>
-                  <option value="festival">Festival</option>
-                  <option value="reminder">Reminder</option>
-                </select>
-              </div>
-              <div><label className="label">Target Segment</label>
-                <select className="input" value={newCampaign.segment} onChange={e => setNewCampaign({ ...newCampaign, segment: e.target.value })}>
-                  <option value="all">All Customers (245)</option>
-                  <option value="vip">VIP Customers (18)</option>
-                  <option value="regular">Regular Customers (89)</option>
-                  <option value="inactive">Inactive Customers (34)</option>
-                </select>
-              </div>
-              <div>
-                <label className="label">Message Templates</label>
-                <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 8 }}>
-                  {templates.map((t, i) => (
-                    <button key={i} onClick={() => setNewCampaign({ ...newCampaign, message: t.text })} style={{ padding: "8px 12px", background: "var(--dark-3)", border: "1px solid var(--border)", borderRadius: 8, cursor: "pointer", textAlign: "left", fontSize: 12, color: "var(--text-secondary)", fontFamily: "Sora", fontWeight: 600 }}>
-                      📋 {t.name}
-                    </button>
-                  ))}
-                </div>
-                <textarea className="input" placeholder="Type your WhatsApp message..." value={newCampaign.message} onChange={e => setNewCampaign({ ...newCampaign, message: e.target.value })} style={{ minHeight: 100 }} />
-                <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4 }}>{newCampaign.message.length}/1000 characters</div>
-              </div>
-              <div style={{ background: "rgba(37,211,102,0.06)", border: "1px solid rgba(37,211,102,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "var(--text-secondary)" }}>
-                <strong style={{ color: "var(--green)" }}>Preview:</strong> Message will be sent to customers via WhatsApp Business API
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn btn-secondary" style={{ flex: 1, justifyContent: "center" }} onClick={() => setShowCreate(false)}>Cancel</button>
-                <button className="btn btn-primary" style={{ flex: 1, justifyContent: "center" }} onClick={() => setShowCreate(false)}>
-                  <Icon name="send" size={14} /> Send Campaign
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Offers Tab
-const DashOffers = () => {
-  const [offers, setOffers] = useState(MOCK_OFFERS);
-  const [showModal, setShowModal] = useState(false);
-  const [newOffer, setNewOffer] = useState({ title: "", discount: "", validUntil: "", type: "promotional" });
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>Offers & Coupons</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>Create and manage discount offers</p>
-        </div>
-        <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}><Icon name="plus" size={14} /> Create Offer</button>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-        {offers.map(offer => (
-          <div key={offer.id} className="card" style={{ background: "linear-gradient(135deg, var(--dark-2) 0%, var(--dark-3) 100%)", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: 80, background: "rgba(0,200,83,0.05)", borderRadius: "0 0 0 80px" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-              <span className={`badge ${offer.type === "festival" ? "badge-orange" : "badge-blue"}`}>{offer.type}</span>
-              <span className={`badge ${offer.status === "active" ? "badge-green" : "badge-gray"}`}>{offer.status}</span>
-            </div>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{offer.title}</h3>
-            <div style={{ fontFamily: "Sora", fontSize: 28, fontWeight: 800, color: "var(--green)", marginBottom: 8 }}>{offer.discount}</div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 14 }}>Valid until: {offer.validUntil}</div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn btn-ghost btn-sm" style={{ flex: 1, justifyContent: "center" }}><Icon name="send" size={13} /> Share</button>
-              <button className="btn btn-ghost btn-sm"><Icon name="edit" size={13} /></button>
-              <button className="btn btn-ghost btn-sm"><Icon name="trash" size={13} /></button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {showModal && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div className="modal">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16 }}>Create New Offer</h3>
-              <button style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} onClick={() => setShowModal(false)}><Icon name="x" size={18} /></button>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div><label className="label">Offer Title</label><input className="input" placeholder="e.g., Diwali Dhamaka Sale" value={newOffer.title} onChange={e => setNewOffer({ ...newOffer, title: e.target.value })} /></div>
-              <div><label className="label">Discount / Deal</label><input className="input" placeholder="e.g., 20% OFF or ₹50 off on ₹500+" value={newOffer.discount} onChange={e => setNewOffer({ ...newOffer, discount: e.target.value })} /></div>
-              <div><label className="label">Valid Until</label><input className="input" type="date" value={newOffer.validUntil} onChange={e => setNewOffer({ ...newOffer, validUntil: e.target.value })} /></div>
-              <div><label className="label">Offer Type</label>
-                <select className="input" value={newOffer.type} onChange={e => setNewOffer({ ...newOffer, type: e.target.value })}>
-                  <option value="promotional">Promotional</option>
-                  <option value="festival">Festival</option>
-                  <option value="weekly">Weekly Special</option>
-                  <option value="clearance">Clearance Sale</option>
-                </select>
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn btn-secondary" style={{ flex: 1, justifyContent: "center" }} onClick={() => setShowModal(false)}>Cancel</button>
-                <button className="btn btn-primary" style={{ flex: 1, justifyContent: "center" }} onClick={() => {
-                  if (newOffer.title) {
-                    setOffers([...offers, { ...newOffer, id: Date.now(), status: "active" }]);
-                    setShowModal(false); setNewOffer({ title: "", discount: "", validUntil: "", type: "promotional" });
-                  }
-                }}>Create Offer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Analytics Tab
-const DashAnalytics = () => {
-  const months = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan"];
-  const msgData = [120, 180, 220, 310, 380, 415];
-  const repeatData = [38, 42, 45, 52, 60, 68];
-  const maxMsg = Math.max(...msgData);
-
-  return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>Analytics</h2>
-        <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>Performance insights for your store</p>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        {[
-          { label: "Total Customers", value: "245", sub: "All time" },
-          { label: "Messages Sent", value: "1,847", sub: "This month" },
-          { label: "Delivery Rate", value: "94.8%", sub: "+2.1% vs last" },
-          { label: "Repeat Rate", value: "68%", sub: "+8% vs last" },
-        ].map((s, i) => (
-          <div key={i} className="stat-card">
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={{ fontSize: 26 }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{s.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20, marginBottom: 20 }}>
-        <div className="card">
-          <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 20 }}>Messages Sent — Last 6 Months</h3>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 120 }}>
-            {msgData.map((v, i) => (
-              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "Sora", fontWeight: 600 }}>{v}</div>
-                <div style={{ width: "100%", background: "rgba(0,200,83,0.2)", borderRadius: "4px 4px 0 0", height: `${(v / maxMsg) * 80}px`, position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--green)", height: `${70 + i * 5}%`, borderRadius: "4px 4px 0 0" }} />
-                </div>
-                <div style={{ fontSize: 10, color: "var(--text-muted)" }}>{months[i]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 20 }}>Repeat Customer Rate (%)</h3>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 120 }}>
-            {repeatData.map((v, i) => (
-              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "Sora", fontWeight: 600 }}>{v}%</div>
-                <div style={{ width: "100%", background: "rgba(88,166,255,0.1)", borderRadius: "4px 4px 0 0", height: `${(v / 80) * 80}px`, position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#58A6FF", height: "80%", borderRadius: "4px 4px 0 0" }} />
-                </div>
-                <div style={{ fontSize: 10, color: "var(--text-muted)" }}>{months[i]}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 16 }}>Campaign Performance</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {MOCK_CAMPAIGNS.filter(c => c.status === "sent").map(c => (
-            <div key={c.id}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 13, fontFamily: "Sora", fontWeight: 600 }}>{c.name}</span>
-                <span style={{ fontSize: 12, color: "var(--green)" }}>{Math.round((c.opened / c.sent) * 100)}% open rate</span>
-              </div>
-              <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 3 }}>Delivered {c.delivered}/{c.sent}</div>
-                  <div className="progress-bar"><div className="progress-fill" style={{ width: `${(c.delivered / c.sent) * 100}%` }} /></div>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 3 }}>Opened {c.opened}/{c.delivered}</div>
-                  <div className="progress-bar"><div className="progress-fill" style={{ width: `${(c.opened / c.delivered) * 100}%`, background: "#58A6FF" }} /></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Schedule Tab
-const DashSchedule = () => {
-  const [events] = useState([
-    { date: "2024-01-26", name: "Republic Day Campaign", type: "festival", target: "All Customers", status: "scheduled" },
-    { date: "2024-02-10", name: "Valentine's Day Offer", type: "promotional", target: "Regular Customers", status: "draft" },
-    { date: "2024-03-08", name: "Holi Festival Greetings", type: "festival", target: "All Customers", status: "draft" },
-    { date: "2024-01-21", name: "Sunday Flash Sale", type: "promotional", target: "VIP Customers", status: "scheduled" },
-  ]);
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>Scheduled Campaigns</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>Plan and schedule your WhatsApp campaigns</p>
-        </div>
-        <button className="btn btn-primary btn-sm"><Icon name="plus" size={14} /> Schedule Campaign</button>
-      </div>
-
-      <div style={{ background: "rgba(0,200,83,0.06)", border: "1px solid rgba(0,200,83,0.2)", borderRadius: 10, padding: 14, marginBottom: 20, fontSize: 13, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
-        <Icon name="info" size={16} style={{ color: "var(--green)", flexShrink: 0 }} />
-        Pre-plan your festival campaigns. KiranaBoost automatically sends messages on the scheduled date and time.
-      </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Campaign</th><th>Type</th><th>Date</th><th>Target</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              {events.map((e, i) => (
-                <tr key={i}>
-                  <td><div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{e.name}</div></td>
-                  <td><span className={`badge ${e.type === "festival" ? "badge-orange" : "badge-blue"}`}>{e.type}</span></td>
-                  <td style={{ fontFamily: "Sora", fontWeight: 600, color: "var(--green)" }}>{e.date}</td>
-                  <td style={{ fontSize: 13, color: "var(--text-secondary)" }}>{e.target}</td>
-                  <td><span className={`badge ${e.status === "scheduled" ? "badge-green" : "badge-gray"}`}>{e.status}</span></td>
-                  <td>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="edit" size={13} /></button>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="trash" size={13} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div style={{ marginTop: 20 }}>
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 12 }}>Upcoming Indian Festivals 2024</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10 }}>
-          {[
-            { name: "Republic Day", date: "Jan 26" },
-            { name: "Holi", date: "Mar 8" },
-            { name: "Ugadi", date: "Apr 9" },
-            { name: "Eid al-Fitr", date: "Apr 10" },
-            { name: "Ram Navami", date: "Apr 17" },
-            { name: "Dussehra", date: "Oct 12" },
-            { name: "Diwali", date: "Nov 1" },
-            { name: "Christmas", date: "Dec 25" },
-          ].map((f, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "var(--dark-2)", border: "1px solid var(--border)", borderRadius: 8 }}>
-              <span style={{ fontSize: 13, fontFamily: "Sora", fontWeight: 600 }}>{f.name}</span>
-              <div style={{ display: "flex", items: "center", gap: 6 }}>
-                <span style={{ fontSize: 12, color: "var(--green)" }}>{f.date}</span>
-                <button style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 12, color: "#58A6FF" }}>+</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Settings Tab
-const DashSettings = ({ user }) => {
-  const [tab, setTab] = useState("profile");
-  return (
-    <div>
-      <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, marginBottom: 20 }}>Settings</h2>
-      <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
-        {["profile", "whatsapp", "subscription", "notifications"].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ padding: "6px 16px", borderRadius: 8, border: "1.5px solid", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 13, textTransform: "capitalize", transition: "all 0.15s",
-            borderColor: tab === t ? "var(--green)" : "var(--border)",
-            background: tab === t ? "rgba(0,200,83,0.1)" : "transparent",
-            color: tab === t ? "var(--green)" : "var(--text-secondary)" }}>
-            {t}
-          </button>
-        ))}
-      </div>
-      <div className="card" style={{ maxWidth: 520 }}>
-        {tab === "profile" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 4 }}>Shop Profile</h3>
-            <div><label className="label">Shop Name</label><input className="input" defaultValue={user?.shopName} /></div>
-            <div><label className="label">Owner Name</label><input className="input" defaultValue={user?.name} /></div>
-            <div><label className="label">Phone (WhatsApp)</label><input className="input" defaultValue="+91 98765 43210" /></div>
-            <div><label className="label">City</label><input className="input" defaultValue="Mumbai" /></div>
-            <div><label className="label">Shop Category</label><select className="input"><option>Kirana / Grocery Store</option></select></div>
-            <button className="btn btn-primary">Save Changes</button>
-          </div>
-        )}
-        {tab === "whatsapp" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15 }}>WhatsApp Integration</h3>
-            <div style={{ background: "rgba(0,200,83,0.08)", border: "1px solid rgba(0,200,83,0.2)", borderRadius: 8, padding: "12px 14px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span className="dot-online" />
-                <span style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, color: "var(--green)" }}>WhatsApp Connected</span>
-              </div>
-              <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>+91 98765 43210 • Sharma General Store</div>
-            </div>
-            <div><label className="label">Business Name (on WhatsApp)</label><input className="input" defaultValue="Sharma General Store" /></div>
-            <div><label className="label">API Key</label><input className="input" defaultValue="••••••••••••••••••••••" type="password" /></div>
-            <button className="btn btn-secondary">Re-connect WhatsApp</button>
-          </div>
-        )}
-        {tab === "subscription" && (
-          <div>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Current Plan</h3>
-            <div style={{ background: "linear-gradient(135deg, rgba(0,200,83,0.1), rgba(0,200,83,0.05))", border: "1.5px solid var(--green)", borderRadius: 10, padding: 16, marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 20, color: "var(--green)" }}>Pro Plan</div>
-                  <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>₹399/month • Renews Feb 1, 2024</div>
-                </div>
-                <span className="badge badge-green">Active</span>
-              </div>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
-              {["2000 messages/month", "Unlimited customers", "Full analytics", "Advanced segmentation"].map((f, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--text-secondary)" }}>
-                  <Icon name="check" size={14} style={{ color: "var(--green)" }} />{f}
-                </div>
-              ))}
-            </div>
-            <button className="btn btn-ghost">Cancel Subscription</button>
-          </div>
-        )}
-        {tab === "notifications" && (
-          <div>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Notification Preferences</h3>
-            {[
-              { label: "Campaign delivery reports", sub: "Get notified when messages are delivered" },
-              { label: "Weekly performance summary", sub: "Weekly report of customer engagement" },
-              { label: "Scheduled campaign reminders", sub: "Reminders before scheduled campaigns go out" },
-              { label: "New customer alerts", sub: "Alert when customers are added" },
-            ].map((n, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid rgba(48,54,61,0.5)" }}>
-                <div>
-                  <div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{n.label}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{n.sub}</div>
-                </div>
-                <div style={{ width: 40, height: 22, background: i < 3 ? "var(--green)" : "var(--dark-4)", borderRadius: 11, cursor: "pointer", position: "relative", transition: "background 0.2s" }}>
-                  <div style={{ position: "absolute", top: 3, left: i < 3 ? 20 : 3, width: 16, height: 16, background: "#fff", borderRadius: "50%", transition: "left 0.2s" }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// ==================== ADMIN DASHBOARD ====================
-const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const navItems = [
-    { id: "overview", label: "Overview", icon: "home" },
-    { id: "users", label: "Users", icon: "users" },
-    { id: "subscriptions", label: "Subscriptions", icon: "rupee" },
-    { id: "analytics", label: "Analytics", icon: "chart" },
-    { id: "system", label: "System", icon: "settings" },
-  ];
-
-  return (
-    <div style={{ paddingTop: 64, display: "flex", minHeight: "100vh" }}>
-      <div className="hide-mobile" style={{ width: 220, background: "var(--dark-2)", borderRight: "1px solid var(--border)", height: "calc(100vh - 64px)", position: "sticky", top: 64, flexShrink: 0 }}>
-        <div style={{ padding: "20px 16px" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(188,130,255,0.1)", border: "1px solid rgba(188,130,255,0.3)", borderRadius: 99, padding: "4px 10px", marginBottom: 16 }}>
-            <Icon name="shield" size={12} style={{ color: "#BC82FF" }} />
-            <span style={{ fontSize: 11, color: "#BC82FF", fontFamily: "Sora", fontWeight: 700 }}>ADMIN PANEL</span>
-          </div>
-          {navItems.map(item => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)}
-              style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 8, border: "none", cursor: "pointer", marginBottom: 2, fontFamily: "Sora", fontWeight: 500, fontSize: 13, transition: "all 0.15s",
-                background: activeTab === item.id ? "rgba(188,130,255,0.1)" : "transparent",
-                color: activeTab === item.id ? "#BC82FF" : "var(--text-secondary)" }}>
-              <Icon name={item.icon} size={16} />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ flex: 1 }}>
-        <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", display: "flex", gap: 6, overflowX: "auto" }}>
-          {navItems.map(item => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 12, whiteSpace: "nowrap",
-                background: activeTab === item.id ? "#BC82FF" : "var(--dark-3)",
-                color: activeTab === item.id ? "#000" : "var(--text-secondary)" }}>
-              <Icon name={item.icon} size={14} />
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ padding: "24px 20px" }} className="fade-in">
-          {activeTab === "overview" && <AdminOverview />}
-          {activeTab === "users" && <AdminUsers />}
-          {activeTab === "subscriptions" && <AdminSubscriptions />}
-          {activeTab === "analytics" && <AdminAnalytics />}
-          {activeTab === "system" && <AdminSystem />}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AdminOverview = () => {
-  const stats = [
-    { label: "Total Shops", value: "10,847", change: "+234 this month", color: "#58A6FF" },
-    { label: "Active Subscriptions", value: "4,312", change: "Pro: 1,890 | Basic: 2,422", color: "var(--green)" },
-    { label: "Messages Sent Today", value: "89,234", change: "94.2% delivery rate", color: "#BC82FF" },
-    { label: "MRR", value: "₹12.4L", change: "+18% vs last month", color: var_orange },
-  ];
-  return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "Sora", fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Platform Overview</h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>KiranaBoost Admin Dashboard</p>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        {stats.map((s, i) => (
-          <div key={i} className="stat-card">
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-value" style={{ color: s.color, fontSize: 24 }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{s.change}</div>
-          </div>
-        ))}
-      </div>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 16 }}>Recent Registrations</h3>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Shop</th><th>Owner</th><th>Plan</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
-            <tbody>
-              {ADMIN_USERS.slice(0, 4).map(u => (
-                <tr key={u.id}>
-                  <td><div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{u.shopName}</div></td>
-                  <td style={{ fontSize: 13, color: "var(--text-secondary)" }}>{u.owner}</td>
-                  <td><span className={`badge ${u.plan === "Pro" ? "badge-purple" : u.plan === "Basic" ? "badge-blue" : "badge-gray"}`}>{u.plan}</span></td>
-                  <td><span className={`badge ${u.status === "active" ? "badge-green" : u.status === "pending" ? "badge-orange" : "badge-red"}`}>{u.status}</span></td>
-                  <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{u.joined}</td>
-                  <td>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="eye" size={13} /></button>
-                      <button className="btn btn-ghost btn-sm" style={{ padding: "4px 8px" }}><Icon name="edit" size={13} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AdminUsers = () => {
-  const [users, setUsers] = useState(ADMIN_USERS);
-  const [filter, setFilter] = useState("all");
-  const filtered = users.filter(u => filter === "all" || u.status === filter);
-
-  return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800 }}>Shop Owners</h2>
-          <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>{users.length} registered shops</p>
-        </div>
-        <button className="btn btn-ghost btn-sm"><Icon name="download" size={14} /> Export</button>
-      </div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
-        {["all", "active", "pending", "suspended"].map(s => (
-          <button key={s} onClick={() => setFilter(s)} style={{ padding: "6px 14px", borderRadius: 99, border: "1.5px solid", cursor: "pointer", fontFamily: "Sora", fontWeight: 600, fontSize: 12, textTransform: "capitalize", transition: "all 0.15s",
-            borderColor: filter === s ? "#BC82FF" : "var(--border)",
-            background: filter === s ? "rgba(188,130,255,0.1)" : "transparent",
-            color: filter === s ? "#BC82FF" : "var(--text-secondary)" }}>
-            {s}
-          </button>
-        ))}
-      </div>
-      <div className="card" style={{ padding: 0 }}>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>Shop</th><th>Owner</th><th>Email</th><th>Plan</th><th>Customers</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              {filtered.map(u => (
-                <tr key={u.id}>
-                  <td><div style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{u.shopName}</div></td>
-                  <td style={{ fontSize: 13, color: "var(--text-secondary)" }}>{u.owner}</td>
-                  <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{u.email}</td>
-                  <td><span className={`badge ${u.plan === "Pro" ? "badge-purple" : u.plan === "Basic" ? "badge-blue" : "badge-gray"}`}>{u.plan}</span></td>
-                  <td style={{ fontFamily: "Sora", fontWeight: 700, color: "var(--green)" }}>{u.customers}</td>
-                  <td><span className={`badge ${u.status === "active" ? "badge-green" : u.status === "pending" ? "badge-orange" : "badge-red"}`}>{u.status}</span></td>
-                  <td>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      {u.status === "pending" && <button className="btn btn-primary btn-sm" style={{ padding: "4px 10px", fontSize: 11 }} onClick={() => setUsers(users.map(x => x.id === u.id ? { ...x, status: "active" } : x))}>Approve</button>}
-                      {u.status === "active" && <button className="btn btn-danger btn-sm" style={{ padding: "4px 10px", fontSize: 11 }} onClick={() => setUsers(users.map(x => x.id === u.id ? { ...x, status: "suspended" } : x))}>Suspend</button>}
-                      {u.status === "suspended" && <button className="btn btn-ghost btn-sm" style={{ padding: "4px 10px", fontSize: 11 }} onClick={() => setUsers(users.map(x => x.id === u.id ? { ...x, status: "active" } : x))}>Restore</button>}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AdminSubscriptions = () => (
-  <div>
-    <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, marginBottom: 20 }}>Subscriptions & Revenue</h2>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
-      {[
-        { plan: "Free", count: "6,535", color: "var(--text-secondary)" },
-        { plan: "Basic (₹199)", count: "2,422", color: "#58A6FF", revenue: "₹4.82L/mo" },
-        { plan: "Pro (₹399)", count: "1,890", color: "#BC82FF", revenue: "₹7.54L/mo" },
-      ].map((p, i) => (
-        <div key={i} className="stat-card">
-          <div style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, color: p.color }}>{p.plan}</div>
-          <div className="stat-value" style={{ fontSize: 26 }}>{p.count}</div>
-          {p.revenue && <div style={{ fontSize: 11, color: "var(--green)" }}>{p.revenue}</div>}
-        </div>
-      ))}
-    </div>
-    <div className="card">
-      <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 16 }}>Recent Transactions</h3>
-      <div className="table-wrap">
-        <table>
-          <thead><tr><th>Shop</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
-          <tbody>
-            {[
-              { shop: "Sharma Store", plan: "Pro", amount: "₹399", date: "2024-01-13", status: "paid" },
-              { shop: "Patel Kirana", plan: "Basic", amount: "₹199", date: "2024-01-13", status: "paid" },
-              { shop: "Singh Provision", plan: "Pro", amount: "₹3,990", date: "2024-01-12", status: "paid" },
-              { shop: "Mehta Store", plan: "Basic", amount: "₹199", date: "2024-01-12", status: "failed" },
-            ].map((t, i) => (
-              <tr key={i}>
-                <td style={{ fontFamily: "Sora", fontWeight: 600, fontSize: 13 }}>{t.shop}</td>
-                <td><span className={`badge ${t.plan === "Pro" ? "badge-purple" : "badge-blue"}`}>{t.plan}</span></td>
-                <td style={{ fontFamily: "Sora", fontWeight: 700, color: "var(--green)" }}>{t.amount}</td>
-                <td style={{ fontSize: 12, color: "var(--text-muted)" }}>{t.date}</td>
-                <td><span className={`badge ${t.status === "paid" ? "badge-green" : "badge-red"}`}>{t.status}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-);
-
-const AdminAnalytics = () => (
-  <div>
-    <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, marginBottom: 20 }}>Platform Analytics</h2>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-      {[
-        { label: "Total Messages Sent", value: "24.8M", sub: "All time" },
-        { label: "Avg Delivery Rate", value: "94.6%", sub: "Platform wide" },
-        { label: "Avg Open Rate", value: "68%", sub: "Industry: 21%" },
-        { label: "Repeat Purchase Lift", value: "+42%", sub: "vs no-CRM stores" },
-      ].map((s, i) => (
-        <div key={i} className="stat-card">
-          <div className="stat-label">{s.label}</div>
-          <div className="stat-value" style={{ fontSize: 24, color: "var(--green)" }}>{s.value}</div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{s.sub}</div>
-        </div>
-      ))}
-    </div>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 16 }}>User Growth (Monthly)</h3>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 100 }}>
-          {[4200, 5100, 6300, 7800, 9200, 10847].map((v, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <div style={{ width: "100%", background: "rgba(188,130,255,0.3)", borderRadius: "4px 4px 0 0", height: `${(v / 10847) * 85}px` }} />
-              <div style={{ fontSize: 9, color: "var(--text-muted)" }}>{["A","S","O","N","D","J"][i]}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14, marginBottom: 16 }}>Plan Distribution</h3>
-        {[
-          { plan: "Free", pct: 60, color: "var(--dark-4)" },
-          { plan: "Basic", pct: 22, color: "#58A6FF" },
-          { plan: "Pro", pct: 18, color: "#BC82FF" },
-        ].map((p, i) => (
-          <div key={i} style={{ marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-              <span style={{ fontSize: 12, fontFamily: "Sora", fontWeight: 600 }}>{p.plan}</span>
-              <span style={{ fontSize: 12, color: p.color }}>{p.pct}%</span>
-            </div>
-            <div className="progress-bar"><div className="progress-fill" style={{ width: `${p.pct}%`, background: p.color }} /></div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-const AdminSystem = () => (
-  <div>
-    <h2 style={{ fontFamily: "Sora", fontSize: 20, fontWeight: 800, marginBottom: 20 }}>System Settings</h2>
-    <div style={{ display: "grid", gap: 16, maxWidth: 600 }}>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>WhatsApp API Configuration</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div><label className="label">Meta Business API Key</label><input className="input" type="password" defaultValue="••••••••••••••••" /></div>
-          <div><label className="label">Phone Number ID</label><input className="input" defaultValue="123456789012345" /></div>
-          <div><label className="label">Monthly Message Limit</label><input className="input" defaultValue="500000" /></div>
-          <button className="btn btn-primary btn-sm">Save API Settings</button>
-        </div>
-      </div>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>Razorpay Configuration</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div><label className="label">Razorpay Key ID</label><input className="input" defaultValue="rzp_live_••••••••••••" /></div>
-          <div><label className="label">Webhook Secret</label><input className="input" type="password" defaultValue="••••••••••••" /></div>
-          <button className="btn btn-primary btn-sm">Save Payment Settings</button>
-        </div>
-      </div>
-      <div className="card">
-        <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 14 }}>Platform Status</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {[
-            { name: "WhatsApp API", status: "operational" },
-            { name: "Razorpay Gateway", status: "operational" },
-            { name: "Firebase Auth", status: "operational" },
-            { name: "Message Queue", status: "operational" },
-          ].map((s, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(48,54,61,0.5)" }}>
-              <span style={{ fontSize: 13, fontFamily: "Sora", fontWeight: 600 }}>{s.name}</span>
-              <span className="badge badge-green"><span className="dot-online" style={{ marginRight: 4 }} />{s.status}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-// ==================== SIMPLE PAGES ====================
-const AboutPage = () => (
-  <div style={{ paddingTop: 80 }}>
-    <section className="section">
-      <div className="container" style={{ maxWidth: 800 }}>
-        <h1 style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 800, marginBottom: 16 }}>About <span className="gradient-text">KiranaBoost</span></h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: 16, lineHeight: 1.8, marginBottom: 24 }}>
-          KiranaBoost was built with one simple mission: to help India's 12+ million kirana stores and small retailers leverage the power of digital marketing without needing any technical knowledge.
-        </p>
-        <p style={{ color: "var(--text-secondary)", fontSize: 16, lineHeight: 1.8, marginBottom: 24 }}>
-          We believe that every small shop owner deserves access to the same customer retention tools that big retail chains use — but in a simple, affordable, and mobile-first way. With WhatsApp being India's most-used messaging platform, we built KiranaBoost entirely around it.
-        </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, marginTop: 40 }}>
-          {[{ icon: "shop", title: "Our Mission", desc: "Digitally empower every kirana store in India" }, { icon: "users", title: "Our Vision", desc: "Make customer loyalty tools accessible to all retailers" }, { icon: "heart", title: "Our Values", desc: "Simplicity, affordability, and impact for small businesses" }].map((v, i) => (
-            <div key={i} className="card">
-              <div style={{ color: "var(--green)", marginBottom: 12 }}><Icon name={v.icon} size={24} /></div>
-              <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 15, marginBottom: 8 }}>{v.title}</h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>{v.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  </div>
-);
-
-const ContactPage = () => (
-  <div style={{ paddingTop: 80 }}>
-    <section className="section">
-      <div className="container" style={{ maxWidth: 700 }}>
-        <h1 style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 800, marginBottom: 16 }}>Contact <span className="gradient-text">Us</span></h1>
-        <p style={{ color: "var(--text-secondary)", marginBottom: 36 }}>Have questions? We're here to help.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20, marginBottom: 36 }}>
-          {[
-            { icon: "mail", title: "Email", value: "support@kiranaboost.in" },
-            { icon: "whatsapp", title: "WhatsApp Support", value: "+91 98765 43210" },
-            { icon: "map", title: "Address", value: "Mumbai, Maharashtra, India" },
-          ].map((c, i) => (
-            <div key={i} className="card" style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <div style={{ color: "var(--green)" }}><Icon name={c.icon} size={20} /></div>
-              <div>
-                <div style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 13, marginBottom: 4 }}>{c.title}</div>
-                <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{c.value}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="card">
-          <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 16 }}>Send a Message</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div><label className="label">Your Name</label><input className="input" placeholder="Rajesh Sharma" /></div>
-              <div><label className="label">Phone Number</label><input className="input" placeholder="+91 98765 43210" /></div>
-            </div>
-            <div><label className="label">Email</label><input className="input" placeholder="rajesh@gmail.com" /></div>
-            <div><label className="label">Message</label><textarea className="input" placeholder="How can we help you?" /></div>
-            <button className="btn btn-primary">Send Message <Icon name="send" size={16} /></button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-);
-
-const FAQPage = () => {
-  const [open, setOpen] = useState(null);
-  const faqs = [
-    { q: "How does WhatsApp messaging work?", a: "KiranaBoost uses the official WhatsApp Business API to send messages. You connect your business WhatsApp number, and we handle message delivery to your customers — all with proper consent and opt-in." },
-    { q: "Is KiranaBoost free to start?", a: "Yes! Our free plan lets you manage up to 50 customers and send 10 messages per month. Upgrade to Basic or Pro when your business grows." },
-    { q: "Do customers need to install any app?", a: "No! Your customers receive messages on their regular WhatsApp — no app installation needed. They just need to have WhatsApp, which almost everyone in India already does." },
-    { q: "Can I import my existing customer list?", a: "Yes, you can import customers via CSV file. Just export your contacts as a CSV and upload it to KiranaBoost." },
-    { q: "How do I pay? What payment methods are accepted?", a: "We use Razorpay for secure payments. You can pay via UPI, debit card, credit card, or net banking. Monthly and yearly plans are available." },
-    { q: "Is my customer data safe?", a: "Absolutely. We use Firebase with enterprise-grade security, SSL encryption, and never share your data with third parties. Your customer list is 100% yours." },
-    { q: "Can I schedule messages in advance?", a: "Yes! With Basic and Pro plans, you can schedule campaigns for future dates. Plan your Diwali, Holi, and other festival campaigns months in advance." },
-    { q: "What languages are supported?", a: "Message templates are available in English, Hindi, Marathi, Gujarati, Tamil, Telugu, Kannada, and Punjabi. You can also type messages in any language." },
-  ];
-  return (
-    <div style={{ paddingTop: 80 }}>
-      <section className="section">
-        <div className="container" style={{ maxWidth: 700 }}>
-          <h1 style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 800, marginBottom: 16 }}>Frequently Asked <span className="gradient-text">Questions</span></h1>
-          <p style={{ color: "var(--text-secondary)", marginBottom: 36 }}>Everything you need to know about KiranaBoost</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {faqs.map((f, i) => (
-              <div key={i} className="card" style={{ cursor: "pointer" }} onClick={() => setOpen(open === i ? null : i)}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 14 }}>{f.q}</span>
-                  <Icon name={open === i ? "x" : "plus"} size={16} style={{ color: "var(--text-muted)", flexShrink: 0, marginLeft: 12 }} />
-                </div>
-                {open === i && <p style={{ marginTop: 12, color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.7 }}>{f.a}</p>}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-const PrivacyPage = () => (
-  <div style={{ paddingTop: 80 }}>
-    <section className="section">
-      <div className="container" style={{ maxWidth: 700 }}>
-        <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8 }}>Privacy Policy</h1>
-        <p style={{ color: "var(--text-muted)", marginBottom: 32 }}>Last updated: January 1, 2024</p>
-        {[
-          { title: "Information We Collect", content: "We collect shop owner registration details (name, email, phone, shop information) and customer phone numbers added by shop owners. We do not collect payment card details — all payments are processed securely by Razorpay." },
-          { title: "How We Use Your Information", content: "Shop owner data is used to provide the KiranaBoost service. Customer data (phone numbers added by shop owners) is used exclusively for sending WhatsApp messages on behalf of the respective shop owner. We never share this data with any third party." },
-          { title: "WhatsApp Messaging & Consent", content: "By using KiranaBoost to send messages, you confirm that your customers have consented to receive promotional messages from your shop. You are responsible for maintaining proper opt-in records for your customers." },
-          { title: "Data Security", content: "All data is stored on Firebase (Google Cloud) infrastructure with AES-256 encryption at rest and TLS 1.3 in transit. We implement access controls and regular security audits." },
-          { title: "Your Rights", content: "You may request deletion of your account and all associated data at any time by contacting support@kiranaboost.in. Customer data will be deleted within 30 days of account deletion." },
-        ].map((s, i) => (
-          <div key={i} style={{ marginBottom: 24 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 8, color: "var(--green)" }}>{s.title}</h3>
-            <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.8 }}>{s.content}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  </div>
-);
-
-const TermsPage = () => (
-  <div style={{ paddingTop: 80 }}>
-    <section className="section">
-      <div className="container" style={{ maxWidth: 700 }}>
-        <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8 }}>Terms & Conditions</h1>
-        <p style={{ color: "var(--text-muted)", marginBottom: 32 }}>Last updated: January 1, 2024</p>
-        {[
-          { title: "Acceptance of Terms", content: "By creating an account on KiranaBoost, you agree to these Terms & Conditions. If you do not agree, please do not use our service." },
-          { title: "Use of Service", content: "KiranaBoost is intended for legitimate business use by shop owners and retailers in India. You may not use KiranaBoost to send spam, unsolicited messages, or any content that violates WhatsApp's Business Policy." },
-          { title: "Subscription & Billing", content: "Subscriptions are billed monthly or annually as selected. All fees are in Indian Rupees (INR) and include applicable GST. Refunds are available within 7 days of subscription start for new subscribers only." },
-          { title: "Messaging Policy", content: "You are responsible for ensuring all customers you message have consented to receive promotional messages. KiranaBoost reserves the right to suspend accounts that violate WhatsApp messaging guidelines." },
-          { title: "Limitation of Liability", content: "KiranaBoost is not liable for message delivery failures due to WhatsApp infrastructure issues, customer phone number changes, or network disruptions beyond our control." },
-          { title: "Governing Law", content: "These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in Mumbai, Maharashtra." },
-        ].map((s, i) => (
-          <div key={i} style={{ marginBottom: 24 }}>
-            <h3 style={{ fontFamily: "Sora", fontWeight: 700, fontSize: 16, marginBottom: 8, color: "var(--green)" }}>{s.title}</h3>
-            <p style={{ color: "var(--text-secondary)", fontSize: 14, lineHeight: 1.8 }}>{s.content}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  </div>
-);
-
-// ==================== DOCS PAGE ====================
-const DocsPage = () => (
-  <div style={{ paddingTop: 80 }}>
-    <section className="section">
-      <div className="container" style={{ maxWidth: 900 }}>
-        <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 8 }}>Technical <span className="gradient-text">Documentation</span></h1>
-        <p style={{ color: "var(--text-secondary)", marginBottom: 36 }}>Project architecture, database schema, API structure, and folder layout</p>
-
-        {/* Folder Structure */}
-        <div className="card" style={{ marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 18, marginBottom: 16 }}>📁 Project Folder Structure</h2>
-          <pre style={{ background: "var(--dark-3)", borderRadius: 8, padding: 16, fontSize: 12, color: "var(--green)", overflow: "auto", lineHeight: 1.8 }}>{`kiranaboost/
-├── frontend/                    # React Frontend
-│   ├── public/
-│   │   ├── index.html
-│   │   └── manifest.json
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Sidebar.jsx
-│   │   │   ├── StatCard.jsx
-│   │   │   ├── CustomerTable.jsx
-│   │   │   └── CampaignCard.jsx
-│   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── About.jsx
-│   │   │   ├── Features.jsx
-│   │   │   ├── Pricing.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Signup.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── AdminDashboard.jsx
-│   │   │   ├── Contact.jsx
-│   │   │   ├── FAQ.jsx
-│   │   │   ├── Privacy.jsx
-│   │   │   └── Terms.jsx
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx
-│   │   ├── hooks/
-│   │   │   ├── useAuth.js
-│   │   │   └── useCustomers.js
-│   │   ├── services/
-│   │   │   ├── api.js
-│   │   │   ├── firebase.js
-│   │   │   └── whatsapp.js
-│   │   └── App.jsx
-│   └── package.json
-│
-├── backend/                     # Node.js + Express Backend
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   ├── authController.js
-│   │   │   ├── shopController.js
-│   │   │   ├── customerController.js
-│   │   │   ├── campaignController.js
-│   │   │   └── adminController.js
-│   │   ├── routes/
-│   │   │   ├── auth.js
-│   │   │   ├── shops.js
-│   │   │   ├── customers.js
-│   │   │   ├── campaigns.js
-│   │   │   └── admin.js
-│   │   ├── middleware/
-│   │   │   ├── authMiddleware.js
-│   │   │   └── rateLimiter.js
-│   │   ├── services/
-│   │   │   ├── whatsappService.js
-│   │   │   └── razorpayService.js
-│   │   ├── models/              # Firestore schema definitions
-│   │   └── app.js
-│   └── package.json
-│
-└── README.md`}</pre>
-        </div>
-
-        {/* Database Schema */}
-        <div className="card" style={{ marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 18, marginBottom: 16 }}>🗄️ Database Schema (Firestore)</h2>
-          <pre style={{ background: "var(--dark-3)", borderRadius: 8, padding: 16, fontSize: 12, color: "#58A6FF", overflow: "auto", lineHeight: 1.8 }}>{`// Collection: users (shop owners)
-users/{userId} {
-  uid: string,
-  name: string,
-  email: string,
-  phone: string,
-  shopName: string,
-  shopCategory: enum[grocery|vegetable|medical|bakery|other],
-  city: string,
-  whatsappConnected: boolean,
-  whatsappPhone: string,
-  plan: enum[free|basic|pro],
-  planExpiry: timestamp,
-  status: enum[active|suspended|pending],
-  createdAt: timestamp,
-  updatedAt: timestamp
 }
 
-// Collection: customers
-customers/{customerId} {
-  shopId: string,          // reference to users
-  name: string,
-  phone: string,           // E.164 format: +919876543210
-  segment: enum[vip|regular|new|inactive],
-  tags: string[],
-  totalPurchases: number,
-  lastVisitDate: timestamp,
-  joinDate: timestamp,
-  notes: string,
-  optedIn: boolean,        // WhatsApp opt-in status
-  createdAt: timestamp
+function addProduct(){
+
+if(!pname||!pprice)return;
+
+setProducts([...products,{name:pname,price:pprice}]);
+
+setPname("");
+setPprice("");
+
 }
 
-// Collection: campaigns
-campaigns/{campaignId} {
-  shopId: string,
-  name: string,
-  type: enum[promotional|festival|reminder|reengagement],
-  message: string,
-  mediaUrl: string,        // optional image
-  targetSegment: enum[all|vip|regular|new|inactive],
-  targetCount: number,
-  status: enum[draft|scheduled|sending|sent|failed],
-  scheduledAt: timestamp,
-  sentAt: timestamp,
-  stats: {
-    sent: number,
-    delivered: number,
-    read: number,
-    failed: number
-  },
-  createdAt: timestamp
+function addSale(){
+
+if(!sale)return;
+
+setSales([...sales,{item:sale,date:new Date().toLocaleDateString()}]);
+
+setSale("");
+
 }
 
-// Collection: offers
-offers/{offerId} {
-  shopId: string,
-  title: string,
-  description: string,
-  discountType: enum[percentage|fixed|bogo],
-  discountValue: string,
-  minOrderValue: number,
-  type: enum[promotional|festival|weekly|clearance],
-  validFrom: timestamp,
-  validUntil: timestamp,
-  status: enum[active|draft|expired],
-  couponCode: string,
-  createdAt: timestamp
+return(
+
+<div>
+
+<div className="header">
+KiranaConnect Shop Dashboard
+</div>
+
+<div className="container">
+
+<div className="card">
+
+<h3>Add Customer</h3>
+
+<input
+placeholder="Name"
+value={cname}
+onChange={(e)=>setCname(e.target.value)}
+/>
+
+<input
+placeholder="Phone"
+value={cphone}
+onChange={(e)=>setCphone(e.target.value)}
+/>
+
+<button onClick={addCustomer}>
+Add
+</button>
+
+<h4>Customers</h4>
+
+{customers.map((c,i)=>(
+<div key={i}>
+{c.name} - {c.phone}
+</div>
+))}
+
+</div>
+
+
+<div className="card">
+
+<h3>Add Product</h3>
+
+<input
+placeholder="Product Name"
+value={pname}
+onChange={(e)=>setPname(e.target.value)}
+/>
+
+<input
+placeholder="Price"
+value={pprice}
+onChange={(e)=>setPprice(e.target.value)}
+/>
+
+<button onClick={addProduct}>
+Add
+</button>
+
+<h4>Products</h4>
+
+{products.map((p,i)=>(
+<div key={i}>
+{p.name} - ₹{p.price}
+</div>
+))}
+
+</div>
+
+
+<div className="card">
+
+<h3>Record Sale</h3>
+
+<input
+placeholder="Item Sold"
+value={sale}
+onChange={(e)=>setSale(e.target.value)}
+/>
+
+<button onClick={addSale}>
+Add Sale
+</button>
+
+<h4>Sales</h4>
+
+{sales.map((s,i)=>(
+<div key={i}>
+{s.item} - {s.date}
+</div>
+))}
+
+</div>
+
+</div>
+
+</div>
+
+)
+
 }
 
-// Collection: subscriptions
-subscriptions/{subId} {
-  shopId: string,
-  plan: enum[free|basic|pro],
-  billingCycle: enum[monthly|yearly],
-  amount: number,
-  currency: string,        // INR
-  razorpaySubId: string,
-  status: enum[active|cancelled|failed|expired],
-  startDate: timestamp,
-  endDate: timestamp,
-  createdAt: timestamp
-}`}</pre>
-        </div>
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>)
 
-        {/* API Structure */}
-        <div className="card" style={{ marginBottom: 20 }}>
-          <h2 style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 18, marginBottom: 16 }}>⚡ REST API Structure</h2>
-          <pre style={{ background: "var(--dark-3)", borderRadius: 8, padding: 16, fontSize: 12, color: "#BC82FF", overflow: "auto", lineHeight: 1.8 }}>{`// Base URL: https://api.kiranaboost.in/v1
+</script>
 
-// ── AUTH ──────────────────────────────────────
-POST   /auth/register          # Register new shop owner
-POST   /auth/login             # Login with email + password
-POST   /auth/logout            # Logout (invalidate token)
-POST   /auth/refresh           # Refresh JWT token
-POST   /auth/forgot-password   # Send password reset email
-
-// ── SHOP ──────────────────────────────────────
-GET    /shop/profile           # Get shop profile
-PUT    /shop/profile           # Update shop profile
-POST   /shop/connect-whatsapp  # Connect WhatsApp Business API
-GET    /shop/stats             # Get shop dashboard stats
-
-// ── CUSTOMERS ─────────────────────────────────
-GET    /customers              # List all customers (paginated)
-POST   /customers              # Add single customer
-POST   /customers/import       # Bulk import via CSV
-GET    /customers/:id          # Get customer detail
-PUT    /customers/:id          # Update customer
-DELETE /customers/:id          # Delete customer
-GET    /customers/segments     # Get segment counts
-PUT    /customers/:id/segment  # Update customer segment
-
-// ── CAMPAIGNS ─────────────────────────────────
-GET    /campaigns              # List campaigns
-POST   /campaigns              # Create campaign
-GET    /campaigns/:id          # Get campaign detail + stats
-PUT    /campaigns/:id          # Update campaign
-DELETE /campaigns/:id          # Delete campaign
-POST   /campaigns/:id/send     # Send campaign immediately
-POST   /campaigns/:id/schedule # Schedule campaign for later
-GET    /campaigns/:id/stats    # Get delivery/read stats
-
-// ── OFFERS ────────────────────────────────────
-GET    /offers                 # List offers
-POST   /offers                 # Create offer
-PUT    /offers/:id             # Update offer
-DELETE /offers/:id             # Delete offer
-POST   /offers/:id/share       # Share offer via WhatsApp
-
-// ── SUBSCRIPTIONS ─────────────────────────────
-GET    /subscription           # Get current subscription
-POST   /subscription/create    # Create Razorpay subscription
-POST   /subscription/verify    # Verify payment callback
-POST   /subscription/cancel    # Cancel subscription
-GET    /subscription/invoices  # List invoices
-
-// ── ADMIN (requires admin role) ───────────────
-GET    /admin/users            # List all shop owners
-PUT    /admin/users/:id/status # Approve/suspend user
-GET    /admin/analytics        # Platform-wide analytics
-GET    /admin/revenue          # Revenue dashboard
-GET    /admin/messages/usage   # WhatsApp usage stats`}</pre>
-        </div>
-
-        {/* Tech Stack */}
-        <div className="card">
-          <h2 style={{ fontFamily: "Sora", fontWeight: 800, fontSize: 18, marginBottom: 16 }}>🛠️ Technology Stack</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
-            {[
-              { layer: "Frontend", tech: "React 18, Tailwind CSS, Vite" },
-              { layer: "Backend", tech: "Node.js, Express.js, JWT Auth" },
-              { layer: "Database", tech: "Firebase Firestore (NoSQL)" },
-              { layer: "Auth", tech: "Firebase Authentication" },
-              { layer: "Messaging", tech: "WhatsApp Business Cloud API" },
-              { layer: "Payments", tech: "Razorpay (UPI, Cards, Net Banking)" },
-              { layer: "Hosting", tech: "Firebase Hosting + Cloud Functions" },
-              { layer: "Storage", tech: "Firebase Cloud Storage" },
-              { layer: "Analytics", tech: "Firebase Analytics + Custom" },
-              { layer: "SEO", tech: "React Helmet, Sitemap, Schema.org" },
-            ].map((s, i) => (
-              <div key={i} style={{ padding: "10px 14px", background: "var(--dark-3)", borderRadius: 8 }}>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "Sora", fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>{s.layer}</div>
-                <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>{s.tech}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-);
-
-// ==================== MAIN APP ====================
-export default function App() {
-  const [page, setPage] = useState("home");
-  const [user, setUser] = useState(null);
-
-  return (
-    <AppContext.Provider value={{ page, setPage, user, setUser }}>
-      <style>{globalStyles}</style>
-      <Navbar page={page} setPage={setPage} user={user} setUser={setUser} />
-      <main>
-        {page === "home" && <HomePage setPage={setPage} />}
-        {page === "about" && <AboutPage />}
-        {page === "features" && <FeaturesPage setPage={setPage} />}
-        {page === "pricing" && <PricingPage setPage={setPage} />}
-        {page === "login" && <LoginPage setPage={setPage} setUser={setUser} />}
-        {page === "signup" && <SignupPage setPage={setPage} setUser={setUser} />}
-        {page === "dashboard" && user && <Dashboard user={user} />}
-        {page === "admin" && user?.role === "admin" && <AdminDashboard />}
-        {page === "contact" && <ContactPage />}
-        {page === "faq" && <FAQPage />}
-        {page === "privacy" && <PrivacyPage />}
-        {page === "terms" && <TermsPage />}
-        {page === "docs" && <DocsPage />}
-        {page === "dashboard" && !user && <LoginPage setPage={setPage} setUser={setUser} />}
-        {page === "admin" && user?.role !== "admin" && <LoginPage setPage={setPage} setUser={setUser} />}
-      </main>
-    </AppContext.Provider>
-  );
-}
-
-const { useState, createContext, useContext } = React;
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
-  </script>
 </body>
 </html>
